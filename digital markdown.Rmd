@@ -1,0 +1,37 @@
+---
+title: "Digitalization_2018"
+author: "Sifan Liu"
+date: "March 12, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+## R Markdown
+
+This is an R Markdown document. This file is to present a reproducible R analysis for the digitalization project:
+
+### Set up
+
+Load the occupation level data.
+```{r occupation data}
+load("occupation_scores.rda")
+knitr::kable(occupation_scores[1:5,])
+
+```
+
+Filter the eligible ones that had a initial score before 2004 and an updated score after 2009. There are 595 of them.
+```{r eligible occupations}
+summary(filter(occupation_scores, eligible == 1))
+
+```
+
+Use box plots to see how distribution of digital scores have shifted
+```{r boxplot}
+boxplot(occupation_scores[3:4])
+```
+
+### Analysis

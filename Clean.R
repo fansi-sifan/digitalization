@@ -65,12 +65,14 @@ occ_master <- occ_digital %>% group_by(occ6, year) %>%
          ed = ifelse(order == 2 & year >= 2009, 1, 0)) 
 
 occ_master_wide <- dcast(setDT(occ_master), occ6 ~ order, value.var = c("Score", "st", "ed"))
-occ_master_wide$eligible <- ifelse(occ_master_wide$st_1*occ_master_wide$ed_2==1,1,0)
+occ_master_wide$eligible <- factor(ifelse(occ_master_wide$st_1*occ_master_wide$ed_2==1,1,0))
 
 summary(occ_master_wide)
 
 occupation_scores <- occ_master_wide %>%
   left_join(ONET_xwalkMaster[6:7], by = c('occ6' = 'SOC.2010.Code')) %>% unique()%>%
   select(occ6, SOC.2010.Title, Score_1, Score_2, eligible) %>%
-  mutate(level_1 = ifelse(Score_1 > 60, 3, ifelse(Score_1 < 33, 1, 2)),
-         level_2 = ifelse(Score_2 > 60, 3, ifelse(Score_2 < 33, 1, 2)))
+  mutate(level_1 = factor(ifelse(Score_1 > 60, 3, ifelse(Score_1 < 33, 1, 2))),
+         level_2 = factor(ifelse(Score_2 > 60, 3, ifelse(Score_2 < 33, 1, 2))))
+
+save(occupation_scores, file = 'V:/Sifan/Digitalization/occupation_scores.Rda')

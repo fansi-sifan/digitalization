@@ -11,7 +11,7 @@ allfiles_k <- lapply (allfiles_k, filter, Element.Name == 'Computers and Electro
 
 rm(Work, Know)
 
-# Master xwalk ------------------------------------------------------------
+# Master ONET xwalk ------------------------------------------------------------
 
 ONET_xwalkMaster <- ONET_xwalk[[1]] %>% 
   left_join(ONET_xwalk[[2]], by = 'O.NET.SOC.2006.Code') %>%
@@ -76,3 +76,28 @@ occupation_scores <- occ_master_wide %>%
          level_2 = factor(ifelse(Score_2 > 60, 3, ifelse(Score_2 < 33, 1, 2))))
 
 save(occupation_scores, file = 'V:/Sifan/Digitalization/occupation_scores.Rda')
+
+
+# master OES xwalk
+
+names(OES2002) <- names(OES2010) <- names(OES2016)
+names(OES2002) <- paste0(names(OES2016) ,"_02")
+names(OES2010) <- paste0(names(OES2016) ,"_10")
+names(OES2016) <- paste0(names(OES2016) ,"_16")
+
+OES2002$OCC_CODE_02 <- gsub("-", "_", OES2002$OCC_CODE_02)
+OES2010$OCC_CODE_10 <- gsub("-", "_", OES2010$OCC_CODE_10)
+OES2016$OCC_CODE_16 <- gsub("-", "_", OES2016$OCC_CODE_16)
+occupation_scores$occ6 <- gsub("-", "_", occupation_scores$occ6)
+
+OES_xwalk <- OES2016 %>% 
+  left_join(OES_xwalk00, by = c("OCC_CODE_16" = "X2010.SOC.code")) %>%
+  left_join(OES2002, by = c("X2000.SOC.code" = "OCC_CODE_02")) %>%
+  left_join(OES_xwalk07,  by = c("OCC_CODE_16" = "X2010.SOC.code"))
+
+# collapse ONET to OES occupations
+OES_OCC <- occupation_scores %>% 
+  left_join(OES_xwalk[c("OCC_CODE_16", "TOT_EMP_16", "A_MEAN_16", "TOT_EMP_02", "A_MEAN_02")],by = c("occ6" = "OCC_CODE_16"))
+
+
+

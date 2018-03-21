@@ -34,12 +34,16 @@ EMG_tasks <- lapply (tasks, read.delim2, sep = '\t', header = TRUE, colClass = '
 EMG_tasks <- EMG_tasks %>% bind_rows() %>% unique()
 all_tasks <- read.delim2("/Users/Fancy/Google Drive/Brookings/Digitization_cleaned/ONET/Raw/db_22_2_text/Task Statements.txt",
                          sep = '\t', header = TRUE, colClass = 'character')
+all_tasks <- read.delim2("/Users/Fancy/Google Drive/Brookings/Digitization_cleaned/ONET/Raw/db_22_2_text/Task Statements.txt",
+                         sep = '\t', header = TRUE, colClass = 'character')
+
 
 # save(EMG_tasks, file = 'V:/Sifan/Digitalization/EMG_tasks.Rda')
 
 # Text analysis Sand Box --------------------------------------------------
 
 load("EMG_tasks.Rda")
+EMG_tasks$year <- factor((stringr::str_sub(EMG_tasks$Date, -4,-1)))
 
 
 summary(all_tasks %>% group_by(O.NET.SOC.Code) %>% summarise(count = n()))
@@ -82,18 +86,20 @@ triwords <- EMG_tasks %>%
 
 # digital task
 
-digital_task <- c("data", "software", "computer", "digital","CNC", "CAD", "web", "social media", "on-line")
+digital_task <- c("data", "software", "computer", "digital","CNC", "CAD", "web", 
+                  "social media", "electronic", "internet")
 
-Digital_tasks <- EMG_tasks[1:2] %>%
+Digital_tasks <- EMG_tasks %>%
   left_join(ONET_xwalkMaster[5:6], by = c("O.NET.SOC.Code" = "O.NET.SOC.2010.Code")) %>%
   left_join(occupation_scores, by = c("SOC.2010.Code" = 'occ6')) %>%
   left_join(title[1:2], by = "O.NET.SOC.Code") %>%
-  mutate(digital = ifelse(grepl(paste(digital_task, collapse="|"), Task), 1,0)) %>% unique() 
+  mutate(digital = factor(ifelse(grepl(paste(digital_task, collapse="|"), Task), 1,0))) %>% unique() %>%
+  group_by(year) 
 
 Digital_tasks <- all_tasks[1:3] %>%
   left_join(ONET_xwalkMaster[5:6], by = c("O.NET.SOC.Code" = "O.NET.SOC.2010.Code")) %>%
   left_join(occupation_scores, by = c("SOC.2010.Code" = 'occ6')) %>%
-  left_join(title[1:2], by = "O.NET.SOC.Code")%>%
+  left_join(title[1:2], by = "O.NET.SOC.Code") %>%
   mutate(digital = ifelse(grepl(paste(digital_task, collapse="|"), Task), 1,0)) %>% unique() 
 
 

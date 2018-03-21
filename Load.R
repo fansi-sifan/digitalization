@@ -23,7 +23,7 @@ Know <- c("db_50/Knowledge.txt",
           "db_17_0/Knowledge.txt",
           "db_22_2_text/Knowledge.txt")
 
-xwalks <- list.files(path = "ONET/crosswalks", full.names = TRUE, all.files = FALSE)
+xwalks <- list.files(path = "../Digitization_cleaned/ONET/crosswalks", full.names = TRUE, all.files = FALSE)
 
 # Read raw ------------------------------------------------------------
 
